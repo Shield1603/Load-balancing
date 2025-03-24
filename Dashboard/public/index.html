@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Request Dashboard</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 20px;
+    }
+    header {
+      background-color: #007bff;
+      color: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    #container {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start; /* Ensure both columns align at the top */
+    }
+    /* Left column for charts and stats */
+    #dashboardContent {
+      flex: 3;
+      min-height: 600px;
+    }
+    /* Container for charts with fixed height for each chart */
+    #chartsContainer {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .chartWrapper {
+      flex: 1;
+      height: 300px; /* Fixed height so charts remain in place */
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    /* Right column for logs */
+    #logsContainer {
+      flex: 2;
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+    .stats {
+      margin-top: 20px;
+      font-size: 1.2em;
+      text-align: center;
+    }
+    h2 {
+      margin-top: 0;
+    }
+    #logsList {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-family: monospace;
+      font-size: 0.9em;
+    }
+    #logsList li {
+      border-bottom: 1px solid #eee;
+      padding: 4px 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Request Dashboard</h1>
+    <p>Real-time statistics and logs for webserver requests</p>
+  </header>
+  <div id="container">
+    <div id="dashboardContent">
+      <div id="chartsContainer">
+        <div class="chartWrapper">
+          <h2>Request Distribution</h2>
+          <canvas id="pieChart"></canvas>
+        </div>
+        <div class="chartWrapper">
+          <h2>Requests Over Time</h2>
+          <canvas id="lineChart"></canvas>
+        </div>
+      </div>
+      <div class="stats" id="statsText"></div>
+    </div>
+    <div id="logsContainer">
+      <h2>Server Logs</h2>
+      <ul id="logsList"></ul>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
