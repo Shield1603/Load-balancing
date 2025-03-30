@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const redis = require('redis');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
@@ -19,7 +20,7 @@ redisClient.on('error', (err) => console.error('Redis error:', err));
   }
 })();
 
-// Create a separate Redis client for subscribing to logs
+// Redis subscriber for logs
 const redisSubscriber = redis.createClient({ socket: { host: 'redis', port: 6379 } });
 redisSubscriber.on('error', (err) => console.error('Redis Subscriber error:', err));
 (async () => {
@@ -27,7 +28,6 @@ redisSubscriber.on('error', (err) => console.error('Redis Subscriber error:', er
     await redisSubscriber.connect();
     console.log('Dashboard: Connected to Redis for logs');
     await redisSubscriber.subscribe('logs', (message) => {
-      console.log('Received log:', message);
       io.emit('log', message);
     });
   } catch (error) {
@@ -35,36 +35,38 @@ redisSubscriber.on('error', (err) => console.error('Redis Subscriber error:', er
   }
 })();
 
-// Serve static files from the public folder
-app.use(express.static('public'));
+// Serve static files from the public folder.
+app.use(express.static(path.join(__dirname, 'public')));
 
 io.on('connection', (socket) => {
-  console.log('Client connected to dashboard');
   sendCounters(socket);
   socket.on('disconnect', () => {
     console.log('Client disconnected from dashboard');
   });
 });
 
-// Function to send counter values
 async function sendCounters(socket) {
   try {
-    const results = await redisClient.mGet(['counter:webserver1', 'counter:webserver2']);
+    const results = await redisClient.mGet(['counter:webserver1', 'counter:webserver2', 'counter:webserver3', 'counter:webserver4']);
     const count1 = parseInt(results[0]) || 0;
     const count2 = parseInt(results[1]) || 0;
-    socket.emit('update', { webserver1: count1, webserver2: count2 });
+    const count3 = parseInt(results[2]) || 0;
+    const count4 = parseInt(results[3]) || 0;
+    socket.emit('update', { webserver1: count1, webserver2: count2, webserver3: count3, webserver4: count4 });
   } catch (err) {
     console.error('Error fetching counters:', err);
   }
 }
 
-// Poll Redis every 2 seconds for counters and broadcast updates
+// Poll Redis every 2 seconds and broadcast updates.
 setInterval(async () => {
   try {
-    const results = await redisClient.mGet(['counter:webserver1', 'counter:webserver2']);
+    const results = await redisClient.mGet(['counter:webserver1', 'counter:webserver2', 'counter:webserver3', 'counter:webserver4']);
     const count1 = parseInt(results[0]) || 0;
     const count2 = parseInt(results[1]) || 0;
-    io.emit('update', { webserver1: count1, webserver2: count2 });
+    const count3 = parseInt(results[2]) || 0;
+    const count4 = parseInt(results[3]) || 0;
+    io.emit('update', { webserver1: count1, webserver2: count2, webserver3: count3, webserver4: count4 });
   } catch (err) {
     console.error('Error in interval:', err);
   }

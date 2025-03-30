@@ -5,18 +5,16 @@ const ctxPie = document.getElementById('pieChart').getContext('2d');
 const pieChart = new Chart(ctxPie, {
   type: 'pie',
   data: {
-    labels: ['Webserver 1', 'Webserver 2'],
+    labels: ['Webserver 1', 'Webserver 2', 'Webserver 3', 'Webserver 4'],
     datasets: [{
-      data: [0, 0],
-      backgroundColor: ['#FF6384', '#36A2EB']
+      data: [0, 0, 0, 0],
+      backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
     }]
   },
   options: {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: {
-      legend: { position: 'bottom' }
-    }
+    plugins: { legend: { position: 'bottom' } }
   }
 });
 
@@ -27,18 +25,10 @@ const lineChart = new Chart(ctxLine, {
   data: {
     labels: [],
     datasets: [
-      {
-        label: 'Webserver 1',
-        data: [],
-        borderColor: '#FF6384',
-        fill: false
-      },
-      {
-        label: 'Webserver 2',
-        data: [],
-        borderColor: '#36A2EB',
-        fill: false
-      }
+      { label: 'Webserver 1', data: [], borderColor: '#FF6384', fill: false },
+      { label: 'Webserver 2', data: [], borderColor: '#36A2EB', fill: false },
+      { label: 'Webserver 3', data: [], borderColor: '#FFCE56', fill: false },
+      { label: 'Webserver 4', data: [], borderColor: '#4BC0C0', fill: false }
     ]
   },
   options: {
@@ -53,37 +43,32 @@ const lineChart = new Chart(ctxLine, {
 
 // Update charts and stats when new counter data arrives
 socket.on('update', (data) => {
-  // Update pie chart
-  pieChart.data.datasets[0].data = [data.webserver1, data.webserver2];
+  pieChart.data.datasets[0].data = [data.webserver1, data.webserver2, data.webserver3, data.webserver4];
   pieChart.update();
-  
-  // Update summary stats
-  const total = data.webserver1 + data.webserver2;
+
+  const total = data.webserver1 + data.webserver2 + data.webserver3 + data.webserver4;
   document.getElementById('statsText').textContent =
-    `Total Requests: ${total} | Webserver 1: ${data.webserver1} | Webserver 2: ${data.webserver2}`;
-  
-  // Update line chart with a new data point
+    `Total Requests: ${total} | WS1: ${data.webserver1} | WS2: ${data.webserver2} | WS3: ${data.webserver3} | WS4: ${data.webserver4}`;
+
   const now = new Date().toLocaleTimeString();
   lineChart.data.labels.push(now);
   lineChart.data.datasets[0].data.push(data.webserver1);
   lineChart.data.datasets[1].data.push(data.webserver2);
-  
-  // Keep only the latest 20 data points
+  lineChart.data.datasets[2].data.push(data.webserver3);
+  lineChart.data.datasets[3].data.push(data.webserver4);
   if (lineChart.data.labels.length > 20) {
     lineChart.data.labels.shift();
-    lineChart.data.datasets[0].data.shift();
-    lineChart.data.datasets[1].data.shift();
+    lineChart.data.datasets.forEach((dataset) => dataset.data.shift());
   }
   lineChart.update();
 });
 
-// Listen for log messages and update logs list
+// Listen for log messages and update the logs list
 socket.on('log', (message) => {
   const logsList = document.getElementById('logsList');
   const li = document.createElement('li');
   li.textContent = message;
   logsList.appendChild(li);
-  // Auto-scroll logs container to the bottom
   const logsContainer = document.getElementById('logsContainer');
   logsContainer.scrollTop = logsContainer.scrollHeight;
 });

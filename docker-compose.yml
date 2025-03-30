@@ -9,6 +9,8 @@ services:
     depends_on:
       - webserver1
       - webserver2
+      - webserver3
+      - webserver4
     networks:
       - mynetwork
 
@@ -27,6 +29,26 @@ services:
       context: ./webserver2
       dockerfile: Dockerfile
     container_name: webserver2
+    depends_on:
+      - redis
+    networks:
+      - mynetwork
+
+  webserver3:
+    build:
+      context: ./webserver3
+      dockerfile: Dockerfile
+    container_name: webserver3
+    depends_on:
+      - redis
+    networks:
+      - mynetwork
+
+  webserver4:
+    build:
+      context: ./webserver4
+      dockerfile: Dockerfile
+    container_name: webserver4
     depends_on:
       - redis
     networks:

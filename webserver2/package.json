@@ -1,5 +1,5 @@
 {
-  "name": "webserver2",
+  "name": "webserver1",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
