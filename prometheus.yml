@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'webserver1'
+    static_configs:
+      - targets: ['webserver1:3000']
+  - job_name: 'webserver2'
+    static_configs:
+      - targets: ['webserver2:3000']
+  - job_name: 'webserver3'
+    static_configs:
+      - targets: ['webserver3:3000']
+  - job_name: 'webserver4'
+    static_configs:
+      - targets: ['webserver4:3000']
